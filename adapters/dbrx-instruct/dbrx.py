@@ -82,6 +82,6 @@ class ModelAdapter(dl.BaseModelAdapter):
 if __name__ == '__main__':
     dl.setenv('prod')
     model = dl.models.get(model_id='665f009d6997dab62d56ae08')
-    item = dl.items.get(item_id='64b3dab4b8a916a73a00dd21')
+    item = dl.items.get(item_id='665f1bb154032d32b2a81ba1')
     adapter = ModelAdapter(model, "DATABRICKS_TOKEN")
     adapter.predict_items(items=[item])
