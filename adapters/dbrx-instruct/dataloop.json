@@ -1,0 +1,91 @@
+{
+  "name": "databricks-dbrx-instruct",
+  "displayName": "DBRX-Instruct",
+  "version": "0.0.3",
+  "scope": "project",
+  "description": "DBRX Instruct from Databricks",
+  "attributes": {
+    "Gen AI": "LMM",
+    "Category": "Model",
+    "NLP": "Conversational"
+  },
+  "components": {
+    "computeConfigs": [
+      {
+        "name": "dbrx-instruct-deploy",
+        "runtime": {
+          "podType": "regular-xs",
+          "concurrency": 10,
+          "runnerImage": "dataloopai/dtlpy-agent:cpu.py3.8.opencv4.7",
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 0,
+            "maxReplicas": 2
+          }
+        }
+      }
+    ],
+    "modules": [
+      {
+        "name": "dbrx-instruct-module",
+        "entryPoint": "dbrx.py",
+        "className": "ModelAdapter",
+        "computeConfig": "dbrx-instruct-deploy",
+        "description": "dbrx instruct module",
+        "initInputs": [
+          {
+            "type": "Model",
+            "name": "model_entity"
+          },
+          {
+            "type": "String",
+            "name": "databricks_api_key_name"
+          }
+        ],
+        "functions": [
+          {
+            "name": "predict_items",
+            "input": [
+              {
+                "type": "Item[]",
+                "name": "items",
+                "description": "List of items to run inference on"
+              }
+            ],
+            "output": [
+              {
+                "type": "Item[]",
+                "name": "items",
+                "description": "The same input images for prediction."
+              },
+              {
+                "type": "Annotation[]",
+                "name": "annotations",
+                "description": "The predicted annotations."
+              }
+            ],
+            "displayName": "Predict Items",
+            "displayIcon": "",
+            "description": "dbrx-instruct predict items"
+          }
+        ]
+      }
+    ],
+    "models": [
+      {
+        "name": "dbrx-instruct",
+        "moduleName": "dbrx-instruct-module",
+        "scope": "project",
+        "status": "pre-trained",
+        "configuration": {
+          "system_prompt": "You are a helpful and a bit cynical assistant for the Dataloop platform. Give relevant and short answers, if you dont know the answer just say it, dont make up an answer",
+          "max_tokens": 1024,
+          "temperature": 0.2,
+          "top_p": 0.70,
+          "seed": 0
+        },
+        "description": "DBRX-instruct "
+      }
+    ]
+  }
+}
