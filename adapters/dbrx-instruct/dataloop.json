@@ -3,12 +3,17 @@
   "displayName": "DBRX-Instruct",
   "version": "0.0.3",
   "scope": "project",
-  "description": "DBRX Instruct from Databricks",
+  "description": "DBRX Instruct is a mixture-of-experts (MoE) large language model trained from scratch by Databricks. DBRX Instruct specializes in few-turn interactions.",
   "attributes": {
     "Provider": "Databricks",
     "Gen AI": "LMM",
     "Category": "Model",
     "NLP": "Conversational"
+  },
+  "codebase": {
+    "type": "git",
+    "gitUrl": "https://github.com/dataloop-ai-apps/databricks-api-adapter",
+    "gitTag": "0.0.3"
   },
   "components": {
     "computeConfigs": [
@@ -106,7 +111,7 @@
           "top_p": 0.70,
           "seed": 0
         },
-        "description": "DBRX-instruct "
+        "description": "DBRX Instruct is a mixture-of-experts (MoE) large language model trained from scratch by Databricks. DBRX Instruct specializes in few-turn interactions."
       }
     ]
   }
