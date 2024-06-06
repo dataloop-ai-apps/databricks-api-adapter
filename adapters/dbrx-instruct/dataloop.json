@@ -65,7 +65,7 @@
               }
             ],
             "displayName": "Predict Items",
-            "displayIcon": "",
+            "displayIcon": "icon-dl-databricks",
             "description": "dbrx-instruct predict items"
           }
         ]
@@ -78,6 +78,8 @@
         "scope": "project",
         "status": "pre-trained",
         "configuration": {
+          "base_url": "<insert-dbrx-endpoint-url>",
+          "databricks_model_name": "<insert-model-name-specified-in-databricks-endpoint>",
           "system_prompt": "You are a helpful and a bit cynical assistant for the Dataloop platform. Give relevant and short answers, if you dont know the answer just say it, dont make up an answer",
           "max_tokens": 1024,
           "temperature": 0.2,

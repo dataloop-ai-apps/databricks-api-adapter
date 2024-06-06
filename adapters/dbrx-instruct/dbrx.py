@@ -19,7 +19,7 @@ class ModelAdapter(dl.BaseModelAdapter):
     def load(self, local_path, **kwargs):
         self.client = OpenAI(
           api_key=self.api_key,
-          base_url="https://adb-824894719035605.5.azuredatabricks.net/serving-endpoints"
+          base_url=self.model_entity.configuration.get("base_url")
           )
 
     def prepare_item_func(self, item: dl.Item):
@@ -55,7 +55,7 @@ class ModelAdapter(dl.BaseModelAdapter):
                         context += f"\n{text}"
                     messages.append({"role": "assistant", "content": context})
                 completion = self.client.chat.completions.create(
-                    model="dbrx-instruct-dataloop",
+                    model=self.model_entity.configuration.get("databricks_model_name"),
                     messages=messages,
                     temperature=self.model_entity.configuration.get('temperature', 0.5),
                     top_p=self.model_entity.configuration.get('top_p', 1),
