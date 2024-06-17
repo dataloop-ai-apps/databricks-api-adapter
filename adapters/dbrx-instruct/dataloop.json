@@ -1,7 +1,7 @@
 {
   "name": "databricks-dbrx-instruct",
   "displayName": "DBRX-Instruct",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scope": "public",
   "description": "DBRX Instruct is a mixture-of-experts (MoE) large language model trained from scratch by Databricks. DBRX Instruct specializes in few-turn interactions. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
   "attributes": {
@@ -14,7 +14,7 @@
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/dataloop-ai-apps/databricks-api-adapter",
-    "gitTag": "0.0.4"
+    "gitTag": "0.0.5"
   },
   "components": {
     "computeConfigs": [
