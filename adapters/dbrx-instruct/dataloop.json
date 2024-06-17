@@ -6,6 +6,7 @@
   "description": "DBRX Instruct is a mixture-of-experts (MoE) large language model trained from scratch by Databricks. DBRX Instruct specializes in few-turn interactions. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
   "attributes": {
     "Provider": "Databricks",
+    "License": "https://www.databricks.com/legal/open-model-license",
     "Gen AI": "LMM",
     "Category": "Model",
     "NLP": "Conversational"
@@ -22,7 +23,7 @@
         "runtime": {
           "podType": "regular-xs",
           "concurrency": 10,
-          "runnerImage": "dataloopai/dtlpy-agent:cpu.py3.8.opencv4.7",
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/openai:1.0.0",
           "autoscaler": {
             "type": "rabbitmq",
             "minReplicas": 0,
