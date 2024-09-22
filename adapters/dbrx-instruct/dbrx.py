@@ -49,7 +49,9 @@ class ModelAdapter(dl.BaseModelAdapter):
 
         for prompt_item in batch:
             # Get all messages including model annotations
-            messages = prompt_item.to_messages(model_name=self.model_entity.name)
+            _messages = prompt_item.to_messages(model_name=self.model_entity.name)
+            messages = self.reformat_messages(_messages)
+
             messages.insert(0, {"role": "system",
                                 "content": system_prompt})
 
@@ -75,3 +77,21 @@ class ModelAdapter(dl.BaseModelAdapter):
 
         return []
 
+    @staticmethod
+    def reformat_messages(messages):
+        """
+        Convert SDK message format to the required format.
+
+        :param messages: A list of messages in the OpenAI format (default by SDK).
+        :return: A list of messages reformatted.
+        """
+        reformat_messages = list()
+        for message in messages:
+            content = message["content"]
+            question = content[0][content[0].get("type")]
+            role = message["role"]
+
+            reformat_message = {"role": role, "content": question}
+            reformat_messages.append(reformat_message)
+
+        return reformat_messages
