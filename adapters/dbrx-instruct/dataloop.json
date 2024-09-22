@@ -45,6 +45,9 @@
         "className": "ModelAdapter",
         "computeConfig": "dbrx-instruct-deploy",
         "description": "dbrx instruct module",
+        "integrations": [
+          "dl-openai-api-key"
+        ],
         "initInputs": [
           {
             "type": "Model",
