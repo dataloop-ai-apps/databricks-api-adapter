@@ -10,13 +10,13 @@ logger = logging.getLogger("DBRX Adapter")
 class ModelAdapter(dl.BaseModelAdapter):
 
     def load(self, local_path, **kwargs):
-        self.api_key = os.environ.get("DATABRICKS_API_KEY", None)
-        if self.api_key is None:
-            raise ValueError(f"Missing API key")
+        api_key = os.environ.get("OPENAI_API_KEY", None)
+        if api_key is None:
+            raise ValueError(f"Missing API key: OPENAI_API_KEY")
 
         self.stream = self.configuration.get("stream", True)
         self.client = OpenAI(
-            api_key=self.api_key,
+            api_key=api_key,
             base_url=self.model_entity.configuration.get("base_url")
         )
 
