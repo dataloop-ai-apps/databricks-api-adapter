@@ -12,9 +12,8 @@ class ModelAdapter(dl.BaseModelAdapter):
     def load(self, local_path, **kwargs):
         api_key = os.environ.get("OPENAI_API_KEY", None)
         if api_key is None:
-            raise ValueError(f"Missing API key: OPENAI_API_KEY")
+            raise ValueError(f"Missing API key")
 
-        self.stream = self.configuration.get("stream", True)
         self.client = OpenAI(
             api_key=api_key,
             base_url=self.model_entity.configuration.get("base_url")
@@ -25,20 +24,20 @@ class ModelAdapter(dl.BaseModelAdapter):
         return prompt_item
 
     def get_config_value(self, key):
-        value = self.configuration.get(key)
-        return openai.NOT_GIVEN if value is None else value
+        value = self.configuration.get(key, openai.NOT_GIVEN)
+        return value
 
     def stream_response(self, messages):
-
+        stream = self.configuration.get("stream", True)
         response = self.client.chat.completions.create(
             messages=messages,
             max_tokens=self.get_config_value("max_tokens"),
             temperature=self.get_config_value("temperature"),
             top_p=self.get_config_value("top_p"),
-            stream=self.stream,
+            stream=stream,
             model=self.model_entity.configuration.get("databricks_model_name"),
         )
-        if self.stream:
+        if stream:
             for chunk in response:
                 yield chunk.choices[0].delta.content or ""
         else:
