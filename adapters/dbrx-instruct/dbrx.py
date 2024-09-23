@@ -1,87 +1,92 @@
 from openai import OpenAI
+import openai
 import dtlpy as dl
 import os
 import logging
-import json
 
 logger = logging.getLogger("DBRX Adapter")
 
 
 class ModelAdapter(dl.BaseModelAdapter):
-    client = None
-
-    def __init__(self, model_entity: dl.Model, databricks_api_key_name=None):
-        self.api_key = os.environ.get(databricks_api_key_name, None)
-        if self.api_key is None:
-            raise ValueError(f"Missing API key: {databricks_api_key_name}")
-        super().__init__(model_entity)
 
     def load(self, local_path, **kwargs):
+        api_key = os.environ.get("DATABRICKS_API_KEY", None)
+        if api_key is None:
+            raise ValueError(f"Missing API key: DATABRICKS_API_KEY")
+
         self.client = OpenAI(
-          api_key=self.api_key,
-          base_url=self.model_entity.configuration.get("base_url")
-          )
+            api_key=api_key,
+            base_url=self.model_entity.configuration.get("base_url")
+        )
 
     def prepare_item_func(self, item: dl.Item):
-        if ('json' not in item.mimetype or
-                item.metadata.get('system', dict()).get('shebang', dict()).get('dltype') != 'prompt'):
-            raise ValueError('Only prompt items are supported')
-        buffer = json.load(item.download(save_locally=False))
-        return buffer
+        prompt_item = dl.PromptItem.from_item(item)
+        return prompt_item
+
+    def stream_response(self, messages):
+        stream = self.configuration.get("stream", True)
+        response = self.client.chat.completions.create(
+            messages=messages,
+            max_tokens=self.configuration.get("max_tokens", openai.NOT_GIVEN),
+            temperature=self.configuration.get("temperature", openai.NOT_GIVEN),
+            top_p=self.configuration.get("top_p", openai.NOT_GIVEN),
+            stream=stream,
+            model=self.model_entity.configuration.get("databricks_model_name"),
+        )
+        if stream:
+            for chunk in response:
+                yield chunk.choices[0].delta.content or ""
+        else:
+            yield response.choices[0].message.content or ""
 
     def predict(self, batch, **kwargs):
         system_prompt = self.model_entity.configuration.get('system_prompt', "")
 
-        annotations = []
         for prompt_item in batch:
-            ann_collection = dl.AnnotationCollection()
-            for prompt_name, prompt_content in prompt_item.get('prompts').items():
-                # get latest question
-                question = [p['value'] for p in prompt_content if 'text' in p['mimetype']][0]
-                messages = [{"role": "system",
-                             "content": system_prompt},
-                            {"role": "user",
-                             "content": question}]
-                nearest_items = [p['nearestItems'] for p in prompt_content if 'metadata' in p['mimetype'] and
-                                 'nearestItems' in p]
-                if len(nearest_items) > 0:
-                    nearest_items = nearest_items[0]
-                    # build context
-                    context = ""
-                    for item_id in nearest_items:
-                        context_item = dl.items.get(item_id=item_id)
-                        with open(context_item.download(), 'r', encoding='utf-8') as f:
-                            text = f.read()
-                        context += f"\n{text}"
-                    messages.append({"role": "assistant", "content": context})
-                completion = self.client.chat.completions.create(
-                    model=self.model_entity.configuration.get("databricks_model_name"),
-                    messages=messages,
-                    temperature=self.model_entity.configuration.get('temperature', 0.5),
-                    top_p=self.model_entity.configuration.get('top_p', 1),
-                    max_tokens=self.model_entity.configuration.get('max_tokens', 256),
-                    stream=self.model_entity.configuration.get('stream', True)
-                )
-                full_answer = ""
-                for chunk in completion:
-                    if chunk.choices[0].delta.content is not None:
-                        full_answer += chunk.choices[0].delta.content
-                ann_collection.add(
-                    annotation_definition=dl.FreeText(text=full_answer),
-                    prompt_id=prompt_name,
-                    model_info={
-                        'name': self.model_entity.name,
-                        'model_id': self.model_entity.id,
-                        'confidence': 1.0
-                    }
-                )
-            annotations.append(ann_collection)
-        return annotations
+            # Get all messages including model annotations
+            _messages = prompt_item.to_messages(model_name=self.model_entity.name)
+            messages = self.reformat_messages(_messages)
 
+            messages.insert(0, {"role": "system",
+                                "content": system_prompt})
 
-if __name__ == '__main__':
-    dl.setenv('')
-    model = dl.models.get(model_id='')
-    item = dl.items.get(item_id='')
-    adapter = ModelAdapter(model, '')
-    adapter.predict_items(items=[item])
+            nearest_items = prompt_item.prompts[-1].metadata.get('nearestItems', [])
+            if len(nearest_items) > 0:
+                context = prompt_item.build_context(nearest_items=nearest_items,
+                                                    add_metadata=self.configuration.get("add_metadata"))
+                logger.info(f"Nearest items Context: {context}")
+                messages.append({"role": "assistant", "content": context})
+
+            stream_response = self.stream_response(messages=messages)
+            response = ""
+            for chunk in stream_response:
+                #  Build text that includes previous stream
+                response += chunk
+                prompt_item.add(message={"role": "assistant",
+                                         "content": [{"mimetype": dl.PromptType.TEXT,
+                                                      "value": response}]},
+                                stream=True,
+                                model_info={'name': self.model_entity.name,
+                                            'confidence': 1.0,
+                                            'model_id': self.model_entity.id})
+
+        return []
+
+    @staticmethod
+    def reformat_messages(messages):
+        """
+        Convert SDK message format to the required format.
+
+        :param messages: A list of messages in the OpenAI format (default by SDK).
+        :return: A list of messages reformatted.
+        """
+        reformat_messages = list()
+        for message in messages:
+            content = message["content"]
+            question = content[0][content[0].get("type")]
+            role = message["role"]
+
+            reformat_message = {"role": role, "content": question}
+            reformat_messages.append(reformat_message)
+
+        return reformat_messages
