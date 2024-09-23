@@ -23,17 +23,13 @@ class ModelAdapter(dl.BaseModelAdapter):
         prompt_item = dl.PromptItem.from_item(item)
         return prompt_item
 
-    def get_config_value(self, key):
-        value = self.configuration.get(key, openai.NOT_GIVEN)
-        return value
-
     def stream_response(self, messages):
         stream = self.configuration.get("stream", True)
         response = self.client.chat.completions.create(
             messages=messages,
-            max_tokens=self.get_config_value("max_tokens"),
-            temperature=self.get_config_value("temperature"),
-            top_p=self.get_config_value("top_p"),
+            max_tokens=self.configuration.get("max_tokens", openai.NOT_GIVEN),
+            temperature=self.configuration.get("temperature", openai.NOT_GIVEN),
+            top_p=self.configuration.get("top_p", openai.NOT_GIVEN),
             stream=stream,
             model=self.model_entity.configuration.get("databricks_model_name"),
         )
