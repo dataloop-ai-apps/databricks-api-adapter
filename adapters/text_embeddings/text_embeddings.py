@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger('openai-text-embeddings')
 
 
-class TextEmbeddings(dl.BaseModelAdapter):
+class ModelAdapter(dl.BaseModelAdapter):
 
     def load(self, local_path, **kwargs):
         """ Load configuration for OpenAI adapter

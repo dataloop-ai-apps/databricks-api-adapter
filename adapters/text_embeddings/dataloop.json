@@ -39,7 +39,7 @@
       {
         "name": "databricks-text-embeddings-module",
         "entryPoint": "adapters/text_embeddings/text_embeddings.py",
-        "className": "TextEmbeddings",
+        "className": "ModelAdapter",
         "computeConfig": "text-embeddings-deploy",
         "description": "Text Embeddings Module",
         "integrations": [
