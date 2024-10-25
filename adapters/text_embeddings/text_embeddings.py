@@ -12,7 +12,9 @@ class ModelAdapter(dl.BaseModelAdapter):
         api_key = os.environ.get("DATABRICKS_API_KEY")
         self.base_url = self.configuration.get("base_url")
         self.model_name = self.configuration.get("model_name")
-
+        self.encoding_format = self.configuration.get(
+            "encoding_format", openai.NotGiven
+        )
         if not api_key:
             raise ValueError(
                 "Environment variable 'DATABRICKS_API_KEY' is not set. "
@@ -62,9 +64,7 @@ class ModelAdapter(dl.BaseModelAdapter):
             response = self.client.embeddings.create(
                 input=text,
                 model=self.model_name,
-                encoding_format=self.model_entity.configuration.get(
-                    "encoding_format", "base64"
-                ),  # base64 is default
+                encoding_format=self.encoding_format,
             )
             embedding = response.data[0].embedding
             logger.info(f"Extracted embeddings for text {item}: {embedding}")
