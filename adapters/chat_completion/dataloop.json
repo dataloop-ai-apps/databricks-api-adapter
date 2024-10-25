@@ -1,0 +1,123 @@
+{
+    "name": "databricks-chat-completion",
+    "displayName": "Databricks Chat Completion Models",
+    "version": "0.0.6",
+    "scope": "public",
+    "description": "This application enables you to use chat completion models available on Databricks. In order to use these models, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
+    "attributes": {
+        "Provider": "Databricks",
+        "Deployed By": "Databricks",
+        "License": "https://www.databricks.com/legal/open-model-license",
+        "Gen AI": "LMM",
+        "Category": "Model",
+        "NLP": "Conversational",
+        "Media Type": [
+            "Text",
+            "Image"
+        ]
+    },
+    "codebase": {
+        "type": "git",
+        "gitUrl": "https://github.com/dataloop-ai-apps/databricks-api-adapter",
+        "gitTag": "0.0.6"
+    },
+    "components": {
+        "computeConfigs": [
+            {
+                "name": "databricks-chat-completion-deploy",
+                "runtime": {
+                    "podType": "regular-xs",
+                    "concurrency": 10,
+                    "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/openai:1.0.0",
+                    "autoscaler": {
+                        "type": "rabbitmq",
+                        "minReplicas": 0,
+                        "maxReplicas": 2
+                    }
+                }
+            }
+        ],
+        "modules": [
+            {
+                "name": "databricks-chat-completion-module",
+                "entryPoint": "adapters/chat_completion/chat_completion.py",
+                "className": "ModelAdapter",
+                "computeConfig": "databricks-chat-completion-deploy",
+                "description": "Chat Completion Module",
+                "integrations": [
+                    "dl-dbrx-api-key"
+                ],
+                "initInputs": [
+                    {
+                        "type": "Model",
+                        "name": "model_entity"
+                    }
+                ],
+                "functions": [
+                    {
+                        "name": "predict_items",
+                        "input": [
+                            {
+                                "type": "Item[]",
+                                "name": "items",
+                                "description": "List of items to run inference on"
+                            }
+                        ],
+                        "output": [
+                            {
+                                "type": "Item[]",
+                                "name": "items",
+                                "description": "The same input images for prediction."
+                            },
+                            {
+                                "type": "Annotation[]",
+                                "name": "annotations",
+                                "description": "The predicted annotations."
+                            }
+                        ],
+                        "displayName": "Predict Items",
+                        "displayIcon": "icon-dl-databricks",
+                        "description": "databricks-chat-completion predict items"
+                    },
+                    {
+                        "name": "predict_dataset",
+                        "input": [
+                            {
+                                "type": "Dataset",
+                                "name": "dataset",
+                                "description": "The input dataset of the items required for prediction."
+                            },
+                            {
+                                "type": "Json",
+                                "name": "filters",
+                                "description": "The DQL in json format to get all the items required for prediction."
+                            }
+                        ],
+                        "output": [],
+                        "displayName": "Predict Dataset",
+                        "displayIcon": "icon-dl-databricks",
+                        "description": "Inference function of the model on a dataset."
+                    }
+                ]
+            }
+        ],
+        "models": [
+            {
+                "name": "dbrx-instruct",
+                "moduleName": "databricks-chat-completion-module",
+                "scope": "project",
+                "status": "pre-trained",
+                "configuration": {
+                    "base_url": "<insert-dbrx-endpoint-url>",
+                    "model_name": "<insert-model-name-specified-in-databricks-endpoint>",
+                    "system_prompt": "You are a helpful and a bit cynical assistant for the Dataloop platform. Give relevant and short answers, if you don't know the answer just say it, don't make up an answer",
+                    "stream": true,
+                    "max_tokens": 1024,
+                    "temperature": 0.2,
+                    "top_p": 0.70
+                },
+                "description": "DBRX Instruct is a mixture-of-experts (MoE) large language model trained from scratch by Databricks. DBRX Instruct specializes in few-turn interactions."
+            }
+        ]
+    }
+}
