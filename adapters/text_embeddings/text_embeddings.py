@@ -3,13 +3,13 @@ import dtlpy as dl
 import os
 import logging
 
-logger = logging.getLogger('openai-text-embeddings')
+logger = logging.getLogger('databricks-text-embeddings')
 
 
 class ModelAdapter(dl.BaseModelAdapter):
 
     def load(self, local_path, **kwargs):
-        """ Load configuration for OpenAI adapter
+        """ Load configuration for Databricks adapter
         """
         api_key = os.environ.get("DATABRICKS_API_KEY")
         if not api_key:
