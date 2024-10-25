@@ -106,7 +106,7 @@
         "scope": "project",
         "status": "pre-trained",
         "configuration": {
-          "base_url": "https://adb-824894719035605.5.azuredatabricks.net/serving-endpoints/",
+          "base_url": "<insert-dbrx-endpoint-url>",
           "model_name": "bge-small-en",
           "encoding_format": "float"
         },
