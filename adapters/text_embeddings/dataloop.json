@@ -107,7 +107,7 @@
         "status": "pre-trained",
         "configuration": {
           "base_url": "<insert-dbrx-endpoint-url>",
-          "model_name": "bge-small-en",
+          "model_name": "<insert-model-name-specified-in-databricks-endpoint>",
           "encoding_format": "float"
         },
         "description": "BGE-Small-EN is a lightweight English text embedding model by BAAI, designed for high-quality embeddings in resource-limited environments. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo."
