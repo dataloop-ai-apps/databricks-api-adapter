@@ -10,14 +10,14 @@ class ModelAdapter(dl.BaseModelAdapter):
     def load(self, local_path, **kwargs):
         """Load configuration for Databricks adapter"""
         api_key = os.environ.get("DATABRICKS_API_KEY")
+        self.base_url = self.configuration.get("base_url")
+        self.model_name = self.configuration.get("model_name")
+
         if not api_key:
             raise ValueError(
                 "Environment variable 'DATABRICKS_API_KEY' is not set. "
                 "Please set it to proceed."
             )
-        self.base_url = self.configuration.get("base_url")
-        self.model_name = self.configuration.get("model_name")
-
         if not self.base_url:
             raise ValueError("Configuration error: 'base_url' is required.")
         if self.base_url == "<insert-dbrx-endpoint-url>":
