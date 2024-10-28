@@ -9,11 +9,6 @@ from typing import List, Dict
 logger = logging.getLogger("databricks-chat-completion-model-adapter")
 
 
-@dl.Package.decorators.module(
-    name="databricks-chat-completion-model-adapter",
-    description="Chat Completion Model Adapter for Databricks models",
-    init_inputs={"model_entity": dl.Model},
-)
 class ModelAdapter(dl.BaseModelAdapter):
     def load(self, local_path, **kwargs):
         """Load configuration for Databricks adapter"""
