@@ -1,4 +1,5 @@
 import openai
+from openai import NOT_GIVEN
 import dtlpy as dl
 import os
 import logging
@@ -10,28 +11,39 @@ class ModelAdapter(dl.BaseModelAdapter):
     def load(self, local_path, **kwargs):
         """Load configuration for Databricks adapter"""
         api_key = os.environ.get("DATABRICKS_API_KEY")
-        self.base_url = self.configuration.get("base_url")
-        self.model_name = self.configuration.get("model_name")
-        self.encoding_format = self.configuration.get(
-            "encoding_format", openai.NotGiven
-        )
+        base_url = self.configuration.get("base_url")
+    
         if not api_key:
             raise ValueError(
                 "Environment variable 'DATABRICKS_API_KEY' is not set. "
                 "Please set it to proceed."
             )
-        if not self.base_url:
+        if not base_url:
             raise ValueError("Configuration error: 'base_url' is required.")
-        if self.base_url == "<insert-dbrx-endpoint-url>":
+        if base_url == "<insert-dbrx-endpoint-url>":
             raise ValueError(
                 "Configuration error: 'base_url' must be replaced with your actual Databricks endpoint URL."
             )
-        if not self.model_name:
+
+        self.client = openai.OpenAI(api_key=api_key, base_url=base_url)
+
+    def call_model(self, text):
+        model_name = self.configuration.get("model_name")
+        encoding_format = self.configuration.get("encoding_format", NOT_GIVEN)
+        if not model_name:
             raise ValueError("Configuration error: 'model_name' is required.")
-
-        self.client = openai.OpenAI(api_key=api_key, base_url=self.base_url)
-
+        if encoding_format is NOT_GIVEN:
+            logger.warning("encoding_format not set. Using default model value")
+        
+        response = self.client.embeddings.create(
+            input=text,
+            model=model_name,
+            encoding_format=encoding_format,
+        )
+        return response.data[0].embedding
+    
     def embed(self, batch, **kwargs):
+        hyde_model_name = self.configuration.get('hyde_model_name')
         embeddings = []
         for item in batch:
             if isinstance(item, str):
@@ -44,7 +56,7 @@ class ModelAdapter(dl.BaseModelAdapter):
                     is_hyde = item.metadata.get("prompt", dict()).get("is_hyde", False)
                     if is_hyde is True:
                         messages = prompt_item.to_messages(
-                            model_name=self.configuration.get("hyde_model_name")
+                            model_name=hyde_model_name
                         )[-1]
                         if messages["role"] == "assistant":
                             text = messages["content"][-1]["text"]
@@ -61,12 +73,7 @@ class ModelAdapter(dl.BaseModelAdapter):
                         f"Only mimetype text or prompt items are supported {e}"
                     )
 
-            response = self.client.embeddings.create(
-                input=text,
-                model=self.model_name,
-                encoding_format=self.encoding_format,
-            )
-            embedding = response.data[0].embedding
+            embedding = self.call_model(text)
             logger.info(f"Extracted embeddings for text {item}: {embedding}")
             embeddings.append(embedding)
 
