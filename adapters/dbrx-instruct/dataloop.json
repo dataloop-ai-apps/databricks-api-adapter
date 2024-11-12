@@ -13,7 +13,12 @@
     "NLP": "Conversational",
     "Media Type": [
       "Text",
-      "Image"
+      "Image",
+      "Multi Modal"
+    ],
+    "Hub": [
+      "Dataloop",
+      "Databricks"
     ]
   },
   "codebase": {
@@ -114,7 +119,7 @@
           "stream": true,
           "max_tokens": 1024,
           "temperature": 0.2,
-          "top_p": 0.70,
+          "top_p": 0.7,
           "seed": 0
         },
         "description": "DBRX Instruct is a mixture-of-experts (MoE) large language model trained from scratch by Databricks. DBRX Instruct specializes in few-turn interactions."
