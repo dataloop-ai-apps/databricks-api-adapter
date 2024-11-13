@@ -4,7 +4,7 @@ import dtlpy as dl
 import os
 import logging
 
-logger = logging.getLogger("DBRX Adapter")
+logger = logging.getLogger("BaseChatCompletionModelAdapter")
 
 
 class ModelAdapter(dl.BaseModelAdapter):
@@ -12,7 +12,7 @@ class ModelAdapter(dl.BaseModelAdapter):
     def load(self, local_path, **kwargs):
         api_key = os.environ.get("DATABRICKS_API_KEY", None)
         if api_key is None:
-            raise ValueError(f"Missing API key: DATABRICKS_API_KEY")
+            raise ValueError("Missing API key: DATABRICKS_API_KEY")
 
         self.client = OpenAI(
             api_key=api_key,
