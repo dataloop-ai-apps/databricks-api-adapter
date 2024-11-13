@@ -4,7 +4,7 @@ import dtlpy as dl
 import os
 import logging
 
-logger = logging.getLogger("databricks-bge-en")
+logger = logging.getLogger("BaseEmbeddingsModelAdapter")
 
 
 class ModelAdapter(dl.BaseModelAdapter):
