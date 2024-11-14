@@ -11,12 +11,19 @@ class ModelAdapter(dl.BaseModelAdapter):
 
     def load(self, local_path, **kwargs):
         api_key = os.environ.get("DATABRICKS_API_KEY", None)
+        base_url = self.model_entity.configuration.get("base_url", None)
+
         if api_key is None:
             raise ValueError("Missing API key: DATABRICKS_API_KEY")
-
+        if not base_url:
+            raise ValueError("Configuration error: 'base_url' is required.")
+        if base_url == "<insert-dbrx-endpoint-url>":
+            raise ValueError(
+                "Configuration error: 'base_url' must be replaced with your actual Databricks endpoint URL."
+            )
         self.client = OpenAI(
             api_key=api_key,
-            base_url=self.model_entity.configuration.get("base_url")
+            base_url=base_url
         )
 
     def prepare_item_func(self, item: dl.Item):
