@@ -5,7 +5,7 @@
   "scope": "public",
   "description": "The Llama 3 models are large language models (LLMs) developed by Meta AI. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
   "attributes": {
-    "Provider": "Databricks",
+    "Provider": "Meta",
     "Deployed By": "Databricks",
     "License": "https://www.databricks.com/legal/open-model-license",
     "Gen AI": "LMM",
@@ -43,7 +43,7 @@
         "entryPoint": "adapters/base_chat_completion.py",
         "className": "ModelAdapter",
         "computeConfig": "meta-llama-3-deploy",
-        "description": "dbrx instruct module",
+        "description": "meta llama 3 module",
         "integrations": [
           "dl-dbrx-api-key"
         ],
