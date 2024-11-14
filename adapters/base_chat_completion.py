@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import OpenAI, NOT_GIVEN
 import openai
 import dtlpy as dl
 import os
@@ -34,9 +34,9 @@ class ModelAdapter(dl.BaseModelAdapter):
         stream = self.configuration.get("stream", True)
         response = self.client.chat.completions.create(
             messages=messages,
-            max_tokens=self.configuration.get("max_tokens", openai.NOT_GIVEN),
-            temperature=self.configuration.get("temperature", openai.NOT_GIVEN),
-            top_p=self.configuration.get("top_p", openai.NOT_GIVEN),
+            max_tokens=self.configuration.get("max_tokens", NOT_GIVEN),
+            temperature=self.configuration.get("temperature", NOT_GIVEN),
+            top_p=self.configuration.get("top_p", NOT_GIVEN),
             stream=stream,
             model=self.model_entity.configuration.get("databricks_model_name"),
         )
