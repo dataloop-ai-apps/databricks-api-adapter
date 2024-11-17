@@ -1,6 +1,6 @@
 {
   "name": "databricks-meta-llama-3-1",
-  "displayName": "Meta Llama 3",
+  "displayName": "Meta Llama 3.1",
   "version": "0.0.6",
   "scope": "public",
   "description": "The Llama 3.1 models are large language models (LLMs) developed by Meta AI. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
