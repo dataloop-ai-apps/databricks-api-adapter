@@ -1,5 +1,4 @@
 from openai import OpenAI, NOT_GIVEN
-import openai
 import dtlpy as dl
 import os
 import logging
@@ -10,12 +9,12 @@ logger = logging.getLogger("BaseChatCompletionModelAdapter")
 class ModelAdapter(dl.BaseModelAdapter):
 
     def load(self, local_path, **kwargs):
-        api_key = os.environ.get("DATABRICKS_API_KEY", None)
-        base_url = self.model_entity.configuration.get("base_url", None)
+        api_key = os.environ.get("DATABRICKS_API_KEY")
+        base_url = self.model_entity.configuration.get("base_url")
 
         if api_key is None:
-            raise ValueError("Missing API key: DATABRICKS_API_KEY")
-        if not base_url:
+            raise ValueError("Missing API key.")
+        if base_url is None:
             raise ValueError("Configuration error: 'base_url' is required.")
         if base_url == "<insert-dbrx-endpoint-url>":
             raise ValueError(

@@ -1,8 +1,7 @@
-import openai
-from openai import NOT_GIVEN
 import dtlpy as dl
-import os
 import logging
+import openai
+import os
 
 logger = logging.getLogger("BaseEmbeddingsModelAdapter")
 
@@ -12,12 +11,9 @@ class ModelAdapter(dl.BaseModelAdapter):
         """Load configuration for Databricks adapter"""
         api_key = os.environ.get("DATABRICKS_API_KEY")
         base_url = self.configuration.get("base_url")
-    
+
         if not api_key:
-            raise ValueError(
-                "Environment variable 'DATABRICKS_API_KEY' is not set. "
-                "Please set it to proceed."
-            )
+            raise ValueError("Missing API key.")
         if not base_url:
             raise ValueError("Configuration error: 'base_url' is required.")
         if base_url == "<insert-dbrx-endpoint-url>":
@@ -29,19 +25,19 @@ class ModelAdapter(dl.BaseModelAdapter):
 
     def call_model(self, text):
         model_name = self.configuration.get("model_name")
-        encoding_format = self.configuration.get("encoding_format", NOT_GIVEN)
-        if not model_name:
+        encoding_format = self.configuration.get("encoding_format")
+        if model_name is None:
             raise ValueError("Configuration error: 'model_name' is required.")
-        if encoding_format is NOT_GIVEN:
+        if encoding_format is None:
             logger.warning("encoding_format not set. Using default model value")
-        
+
         response = self.client.embeddings.create(
             input=text,
             model=model_name,
             encoding_format=encoding_format,
         )
         return response.data[0].embedding
-    
+
     def embed(self, batch, **kwargs):
         hyde_model_name = self.configuration.get('hyde_model_name')
         embeddings = []
