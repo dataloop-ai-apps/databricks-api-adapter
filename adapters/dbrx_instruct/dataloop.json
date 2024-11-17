@@ -13,8 +13,7 @@
     "NLP": "Conversational",
     "Media Type": [
       "Text",
-      "Image",
-      "Multi Modal"
+      "Image"
     ],
     "Hub": [
       "Dataloop",

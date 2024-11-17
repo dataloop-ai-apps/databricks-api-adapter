@@ -92,12 +92,12 @@ class ModelAdapter(dl.BaseModelAdapter):
             message_content = ""
             for content in message.get("content"):
                 type = content.get("type")
-                if 'image' in type:
-                    question = content.get("image_url", {}).get("url", "")
-                    message_content += f"Image: {question}\n"
-                else:
+                if 'text' in type:
                     question = content.get(type)
-                    message_content += f"{type}: {question}\n"
+                    message_content += question
+                else:
+                    logger.warning("Multimodal options is not supported.")
+
             reformat_message = {"role": role, "content": message_content}
             reformat_messages.append(reformat_message)
 
