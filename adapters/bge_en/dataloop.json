@@ -40,8 +40,8 @@
         "name": "bge-en-module",
         "entryPoint": "adapters/base_embeddings.py",
         "className": "ModelAdapter",
-        "computeConfig": "text-embeddings-deploy",
-        "description": "Text Embeddings Module",
+        "computeConfig": "bge-en-deploy",
+        "description": "BGE Embeddings Module",
         "integrations": [
           "dl-dbrx-api-key"
         ],
