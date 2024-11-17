@@ -117,6 +117,7 @@
         "moduleName": "bge-en-module",
         "scope": "project",
         "status": "pre-trained",
+        "inputType": "text",
         "configuration": {
           "base_url": "<insert-dbrx-endpoint-url>",
           "model_name": "<insert-model-name-specified-in-databricks-endpoint>",
@@ -129,6 +130,7 @@
         "moduleName": "bge-en-module",
         "scope": "project",
         "status": "pre-trained",
+        "inputType": "text",
         "configuration": {
           "base_url": "<insert-dbrx-endpoint-url>",
           "model_name": "<insert-model-name-specified-in-databricks-endpoint>",
