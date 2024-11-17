@@ -88,11 +88,17 @@ class ModelAdapter(dl.BaseModelAdapter):
         """
         reformat_messages = list()
         for message in messages:
-            content = message["content"]
-            question = content[0][content[0].get("type")]
-            role = message["role"]
-
-            reformat_message = {"role": role, "content": question}
+            role = message.get("role")
+            message_content = ""
+            for content in message.get("content"):
+                type = content.get("type")
+                if 'image' in type:
+                    question = content.get("image_url", {}).get("url", "")
+                    message_content += f"Image: {question}\n"
+                else:
+                    question = content.get(type)
+                    message_content += f"{type}: {question}\n"
+            reformat_message = {"role": role, "content": message_content}
             reformat_messages.append(reformat_message)
 
         return reformat_messages
