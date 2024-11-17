@@ -1,0 +1,123 @@
+{
+  "name": "databricks-meta-llama-3-1",
+  "displayName": "Meta Llama 3.1",
+  "version": "0.0.6",
+  "scope": "public",
+  "description": "The Llama 3.1 models are large language models (LLMs) developed by Meta AI. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
+  "attributes": {
+    "Provider": "Meta",
+    "Deployed By": "Databricks",
+    "License": "https://www.databricks.com/legal/open-model-license",
+    "Gen AI": "LMM",
+    "Category": "Model",
+    "NLP": "Conversational",
+    "Media Type": [
+      "Text",
+      "Image"
+    ]
+  },
+  "codebase": {
+    "type": "git",
+    "gitUrl": "https://github.com/dataloop-ai-apps/databricks-api-adapter",
+    "gitTag": "0.0.6"
+  },
+  "components": {
+    "computeConfigs": [
+      {
+        "name": "meta-llama-3-1-deploy",
+        "runtime": {
+          "podType": "regular-xs",
+          "concurrency": 10,
+          "runnerImage": "gcr.io/viewo-g/piper/agent/runner/cpu/openai:1.0.0",
+          "autoscaler": {
+            "type": "rabbitmq",
+            "minReplicas": 0,
+            "maxReplicas": 2
+          }
+        }
+      }
+    ],
+    "modules": [
+      {
+        "name": "meta-llama-3-1-module",
+        "entryPoint": "adapters/base_chat_completion.py",
+        "className": "ModelAdapter",
+        "computeConfig": "meta-llama-3-1-deploy",
+        "description": "meta llama 3 module",
+        "integrations": [
+          "dl-dbrx-api-key"
+        ],
+        "initInputs": [
+          {
+            "type": "Model",
+            "name": "model_entity"
+          }
+        ],
+        "functions": [
+          {
+            "name": "predict_items",
+            "input": [
+              {
+                "type": "Item[]",
+                "name": "items",
+                "description": "List of items to run inference on"
+              }
+            ],
+            "output": [
+              {
+                "type": "Item[]",
+                "name": "items",
+                "description": "The same input images for prediction."
+              },
+              {
+                "type": "Annotation[]",
+                "name": "annotations",
+                "description": "The predicted annotations."
+              }
+            ],
+            "displayName": "Predict Items",
+            "displayIcon": "icon-dl-databricks",
+            "description": "meta-llama-3 predict items"
+          },
+          {
+            "name": "predict_dataset",
+            "input": [
+              {
+                "type": "Dataset",
+                "name": "dataset",
+                "description": "The input dataset of the items required for prediction."
+              },
+              {
+                "type": "Json",
+                "name": "filters",
+                "description": "The DQL in json format to get all the items required for prediction."
+              }
+            ],
+            "output": [],
+            "displayName": "Predict Dataset",
+            "displayIcon": "",
+            "description": "Inference function of the model on a dataset."
+          }
+        ]
+      }
+    ],
+    "models": [
+      {
+        "name": "meta_llama_3_1_8b_instruct",
+        "moduleName": "meta-llama-3-1-module",
+        "scope": "project",
+        "status": "pre-trained",
+        "configuration": {
+          "base_url": "<insert-dbrx-endpoint-url>",
+          "databricks_model_name": "<insert-model-name-specified-in-databricks-endpoint>",
+          "stream": true,
+          "max_tokens": 1024,
+          "temperature": 0.2,
+          "top_p": 0.70,
+          "seed": 0
+        },
+        "description": "The Llama 3.1 models are large language models (LLMs) developed by Meta AI. This model is the 8B parameter variant."
+      }
+    ]
+  }
+}

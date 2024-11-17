@@ -13,8 +13,7 @@
     "NLP": "Conversational",
     "Media Type": [
       "Text",
-      "Image",
-      "Multi Modal"
+      "Image"
     ],
     "Hub": [
       "Dataloop",
@@ -45,7 +44,7 @@
     "modules": [
       {
         "name": "dbrx-instruct-module",
-        "entryPoint": "adapters/dbrx-instruct/dbrx.py",
+        "entryPoint": "adapters/base_chat_completion.py",
         "className": "ModelAdapter",
         "computeConfig": "dbrx-instruct-deploy",
         "description": "dbrx instruct module",

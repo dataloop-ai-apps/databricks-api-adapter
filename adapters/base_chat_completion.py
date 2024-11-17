@@ -1,22 +1,28 @@
-from openai import OpenAI
-import openai
+from openai import OpenAI, NOT_GIVEN
 import dtlpy as dl
 import os
 import logging
 
-logger = logging.getLogger("DBRX Adapter")
+logger = logging.getLogger("BaseChatCompletionModelAdapter")
 
 
 class ModelAdapter(dl.BaseModelAdapter):
 
     def load(self, local_path, **kwargs):
-        api_key = os.environ.get("DATABRICKS_API_KEY", None)
-        if api_key is None:
-            raise ValueError(f"Missing API key: DATABRICKS_API_KEY")
+        api_key = os.environ.get("DATABRICKS_API_KEY")
+        base_url = self.model_entity.configuration.get("base_url")
 
+        if api_key is None:
+            raise ValueError("Missing API key.")
+        if base_url is None:
+            raise ValueError("Configuration error: 'base_url' is required.")
+        if base_url == "<insert-dbrx-endpoint-url>":
+            raise ValueError(
+                "Configuration error: 'base_url' must be replaced with your actual Databricks endpoint URL."
+            )
         self.client = OpenAI(
             api_key=api_key,
-            base_url=self.model_entity.configuration.get("base_url")
+            base_url=base_url
         )
 
     def prepare_item_func(self, item: dl.Item):
@@ -27,9 +33,9 @@ class ModelAdapter(dl.BaseModelAdapter):
         stream = self.configuration.get("stream", True)
         response = self.client.chat.completions.create(
             messages=messages,
-            max_tokens=self.configuration.get("max_tokens", openai.NOT_GIVEN),
-            temperature=self.configuration.get("temperature", openai.NOT_GIVEN),
-            top_p=self.configuration.get("top_p", openai.NOT_GIVEN),
+            max_tokens=self.configuration.get("max_tokens", NOT_GIVEN),
+            temperature=self.configuration.get("temperature", NOT_GIVEN),
+            top_p=self.configuration.get("top_p", NOT_GIVEN),
             stream=stream,
             model=self.model_entity.configuration.get("databricks_model_name"),
         )
@@ -82,11 +88,17 @@ class ModelAdapter(dl.BaseModelAdapter):
         """
         reformat_messages = list()
         for message in messages:
-            content = message["content"]
-            question = content[0][content[0].get("type")]
-            role = message["role"]
+            role = message.get("role")
+            message_content = ""
+            for content in message.get("content"):
+                type = content.get("type")
+                if 'text' in type:
+                    question = content.get(type)
+                    message_content += question
+                else:
+                    logger.warning("Multimodal options is not supported.")
 
-            reformat_message = {"role": role, "content": question}
+            reformat_message = {"role": role, "content": message_content}
             reformat_messages.append(reformat_message)
 
         return reformat_messages
