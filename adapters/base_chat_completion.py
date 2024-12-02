@@ -32,7 +32,8 @@ class ModelAdapter(dl.BaseModelAdapter):
     def stream_response(self, messages):
         stream = self.configuration.get("stream", True)
         extra_headers = {
-            "User-Agent": "integration/Dataloop"
+            "User-Agent": "integration/Dataloop",
+            "Dtlpy-Model": f"{self.model_entity.name}/0.0.1"
         }
 
         response = self.client.chat.completions.create(

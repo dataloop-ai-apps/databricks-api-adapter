@@ -27,7 +27,8 @@ class ModelAdapter(dl.BaseModelAdapter):
         model_name = self.configuration.get("model_name")
         encoding_format = self.configuration.get("encoding_format")
         extra_headers = {
-            "User-Agent": "integration/Dataloop"
+            "User-Agent": "integration/Dataloop",
+            "Dtlpy-Model": f"{self.model_entity.name}/0.0.1"
         }
 
         if model_name is None:
