@@ -31,6 +31,11 @@ class ModelAdapter(dl.BaseModelAdapter):
 
     def stream_response(self, messages):
         stream = self.configuration.get("stream", True)
+        extra_headers = {
+            "User-Agent": "integration/Dataloop",
+            "Dtlpy-Model": f"{self.model_entity.name}/0.0.1"
+        }
+
         response = self.client.chat.completions.create(
             messages=messages,
             max_tokens=self.configuration.get("max_tokens", NOT_GIVEN),
@@ -38,6 +43,7 @@ class ModelAdapter(dl.BaseModelAdapter):
             top_p=self.configuration.get("top_p", NOT_GIVEN),
             stream=stream,
             model=self.model_entity.configuration.get("databricks_model_name"),
+            extra_headers=extra_headers
         )
         if stream:
             for chunk in response:

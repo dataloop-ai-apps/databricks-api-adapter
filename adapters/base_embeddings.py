@@ -26,6 +26,11 @@ class ModelAdapter(dl.BaseModelAdapter):
     def call_model(self, text):
         model_name = self.configuration.get("model_name")
         encoding_format = self.configuration.get("encoding_format")
+        extra_headers = {
+            "User-Agent": "integration/Dataloop",
+            "Dtlpy-Model": f"{self.model_entity.name}/0.0.1"
+        }
+
         if model_name is None:
             raise ValueError("Configuration error: 'model_name' is required.")
         if encoding_format is None:
@@ -35,6 +40,7 @@ class ModelAdapter(dl.BaseModelAdapter):
             input=text,
             model=model_name,
             encoding_format=encoding_format,
+            extra_headers=extra_headers
         )
         return response.data[0].embedding
 
