@@ -1,9 +1,9 @@
 {
-  "name": "databricks-meta-llama-3-1",
-  "displayName": "Meta Llama 3.1",
+  "name": "databricks-meta-llama-3-2",
+  "displayName": "Meta Llama 3.2",
   "version": "0.0.13",
   "scope": "public",
-  "description": "The Llama 3.1 models are large language models (LLMs) developed by Meta AI. In order to use this model, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
+  "description": "Llama 3.2 offers multilingual LLMs, pretrained and instruction-tuned for text-based tasks like dialogue, retrieval, and summarization.",
   "attributes": {
     "Provider": "Meta",
     "Deployed By": "Databricks",
@@ -23,7 +23,7 @@
   "components": {
     "computeConfigs": [
       {
-        "name": "meta-llama-3-1-deploy",
+        "name": "meta-llama-3-2-deploy",
         "runtime": {
           "podType": "regular-xs",
           "concurrency": 10,
@@ -38,10 +38,10 @@
     ],
     "modules": [
       {
-        "name": "meta-llama-3-1-module",
+        "name": "meta-llama-3-2-module",
         "entryPoint": "adapters/base_chat_completion.py",
         "className": "ModelAdapter",
-        "computeConfig": "meta-llama-3-1-deploy",
+        "computeConfig": "meta-llama-3-2-deploy",
         "description": "meta llama 3 module",
         "integrations": [
           "dl-dbrx-api-key"
@@ -102,8 +102,8 @@
     ],
     "models": [
       {
-        "name": "meta_llama_3_1_8b_instruct",
-        "moduleName": "meta-llama-3-1-module",
+        "name": "meta_llama_3_2",
+        "moduleName": "meta-llama-3-2-module",
         "scope": "project",
         "status": "pre-trained",
         "configuration": {
@@ -115,7 +115,7 @@
           "top_p": 0.70,
           "seed": 0
         },
-        "description": "The Llama 3.1 models are large language models (LLMs) developed by Meta AI. This model is the 8B parameter variant."
+        "description": "The Llama 3.2 models are large language models (LLMs) developed by Meta AI. This model is the 8B parameter variant."
       }
     ]
   }
