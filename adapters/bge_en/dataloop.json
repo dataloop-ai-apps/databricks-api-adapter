@@ -1,7 +1,7 @@
 {
   "name": "bge-en",
   "displayName": "BGE Embeddings Models",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "scope": "public",
   "description": "This application enables you to use the BGE embeddings models available on Databricks. In order to use these models, it is necessary to have a Databricks serving endpoint and add a Databricks Token as a secret. For more information, consult the README files in the dataloop-ai-apps repo.",
   "attributes": {
@@ -17,7 +17,7 @@
   "codebase": {
     "type": "git",
     "gitUrl": "https://github.com/dataloop-ai-apps/databricks-api-adapter",
-    "gitTag": "0.0.13"
+    "gitTag": "0.0.14"
   },
   "components": {
     "computeConfigs": [
