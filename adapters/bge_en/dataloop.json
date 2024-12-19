@@ -7,6 +7,10 @@
   "attributes": {
     "Provider": "Databricks",
     "Deployed By": "Databricks",
+    "Hub": [
+      "Dataloop",
+      "Databricks"
+    ],
     "License": "https://www.databricks.com/legal/open-model-license",
     "Category": "Model",
     "NLP": "Embeddings",
