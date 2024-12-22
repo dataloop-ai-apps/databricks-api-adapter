@@ -7,6 +7,10 @@
   "attributes": {
     "Provider": "Meta",
     "Deployed By": "Databricks",
+    "Hub": [
+      "Dataloop",
+      "Databricks"
+    ],
     "License": "https://www.databricks.com/legal/open-model-license",
     "Gen AI": "LMM",
     "Category": "Model",
