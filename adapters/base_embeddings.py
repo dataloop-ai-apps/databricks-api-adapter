@@ -36,6 +36,8 @@ class ModelAdapter(dl.BaseModelAdapter):
         if encoding_format is None:
             logger.warning("encoding_format not set. Using default model value")
 
+        if not isinstance(text, (str, list)):
+            raise TypeError(f"Expected text input to be str or list, got {type(text).__name__}")
         response = self.client.embeddings.create(
             input=text,
             model=model_name,
